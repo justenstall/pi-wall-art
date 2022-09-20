@@ -1,20 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
-
 func main() {
 
 }
 
-type Page struct {
-	Title string
-	Body []byte
-}
+func displayImage() {
 
-func (p *Page) save() error {
-	filename := p.Title + ".txt"
-	return os.WriteFile(filename, p.Body, 0600)
 }
