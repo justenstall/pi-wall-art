@@ -1,0 +1,1 @@
+sudo ./led-image-viewer --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat ../img/coordinates.png
