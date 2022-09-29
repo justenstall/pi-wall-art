@@ -1,4 +1,4 @@
---led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat
+--led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat --led-slowdown-gpio=4 --led-brightness=70 --led-show-refresh --led-pwm-dither-bits=1
 
 sudo led-image-viewer --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat ~/pi-wall-art/me.jpeg
 
