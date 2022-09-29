@@ -1,1 +1,5 @@
-sudo ./led-image-viewer --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat ../img/coordinates.png
+--led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat
+
+sudo led-image-viewer --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat ~/pi-wall-art/me.jpeg
+
+sudo text-scroller --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat -f ~/rpi-rgb-led-matrix/fonts/10x20.bdf -s 2 -C 0,255,255 HELLO
