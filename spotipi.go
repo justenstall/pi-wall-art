@@ -1,10 +1,12 @@
+package main
+
 import (
 	"context"
 	"fmt"
-	spotifyauth "github.com/zmb3/spotify/v2/auth"
 	"log"
 	"net/http"
-	"strings"
+
+	spotifyauth "github.com/zmb3/spotify/v2/auth"
 
 	"github.com/zmb3/spotify/v2"
 )
@@ -14,60 +16,22 @@ import (
 // and enter this value.
 const redirectURI = "http://localhost:8080/callback"
 
-var html = `
-<br/>
-<a href="/player/play">Play</a><br/>
-<a href="/player/pause">Pause</a><br/>
-<a href="/player/next">Next track</a><br/>
-<a href="/player/previous">Previous Track</a><br/>
-<a href="/player/shuffle">Shuffle</a><br/>
-`
-
 var (
 	auth = spotifyauth.New(
 		spotifyauth.WithRedirectURL(redirectURI),
-		spotifyauth.WithScopes(spotifyauth.ScopeUserReadCurrentlyPlaying, spotifyauth.ScopeUserReadPlaybackState, spotifyauth.ScopeUserModifyPlaybackState),
+		spotifyauth.WithScopes(spotifyauth.ScopeUserReadCurrentlyPlaying),
 	)
 	ch    = make(chan *spotify.Client)
 	state = "abc123"
 )
 
+// curl command to reverse engineer: curl -X "GET" "https://api.spotify.com/v1/me/player/currently-playing" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer BQAn_gB3WMKwOb2q9FYfYcL_Nwc2bTWjorrFE5Dv_AfYhQZ_1lqfWLMUzKsEsJ9It7GOrp37lGluP6ww2ctLpPc2VdOiB6A8V6lDCsqA1IOBFfYOq-4pkytyNohMSzW8c3sPnt4Ka2PVmhbTLZ7LSYH7LqLynJW96fzg7zEU5zWnpI-wskSav7gS1DE3B6Kt2bdSotv3
+
 func main() {
 	// We'll want these variables sooner rather than later
 	var client *spotify.Client
 	var playerState *spotify.PlayerState
-
-	http.HandleFunc("/callback", completeAuth)
-
-	http.HandleFunc("/player/", func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		action := strings.TrimPrefix(r.URL.Path, "/player/")
-		fmt.Println("Got request for:", action)
-		var err error
-		switch action {
-		case "play":
-			err = client.Play(ctx)
-		case "pause":
-			err = client.Pause(ctx)
-		case "next":
-			err = client.Next(ctx)
-		case "previous":
-			err = client.Previous(ctx)
-		case "shuffle":
-			playerState.ShuffleState = !playerState.ShuffleState
-			err = client.Shuffle(ctx, playerState.ShuffleState)
-		}
-		if err != nil {
-			log.Print(err)
-		}
-
-		w.Header().Set("Content-Type", "text/html")
-		fmt.Fprint(w, html)
-	})
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Got request for:", r.URL.String())
-	})
+	spotify.New(http.DefaultClient)
 
 	go func() {
 		url := auth.AuthURL(state)
@@ -91,7 +55,6 @@ func main() {
 	}()
 
 	http.ListenAndServe(":8080", nil)
-
 }
 
 func completeAuth(w http.ResponseWriter, r *http.Request) {
@@ -107,6 +70,6 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 	// use the token to get an authenticated client
 	client := spotify.New(auth.Client(r.Context(), tok))
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, "Login Completed!"+html)
+	fmt.Fprintf(w, "Login Completed!")
 	ch <- client
 }
