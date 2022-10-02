@@ -40,24 +40,20 @@ auth_manager=SpotifyOAuth(
 
 # Initialize Spotify Client
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(
-    client_id="beace81697df48ca99e0496bb79dba7c",
-    client_secret="3d5a8e048c1b43ae86bfc6dd366efbd2",
+    client_id=client_id,
+    client_secret=client_secret,
 ))
 
-# Configuration for the matrix
-options = RGBMatrixOptions()
-options.rows = 64
-options.cols = 64
-options.brightness = 70
-# options.show_refresh_rate = True
-options.pwm_dither_bits = 1
-options.chain_length = 1
-options.parallel = 1
-options.hardware_mapping = 'adafruit-hat-pwm'
-
 # Initialize RGB Matrix object
-matrix = RGBMatrix(options=options)
-
+matrix = RGBMatrix(options=RGBMatrixOptions(
+    rows=64,
+    cols=64,
+    brightness=70,
+    pwm_dither_bits=1,
+    chain_length=1,
+    parallel=1,
+    hardware_mapping="adafruit-hat-pwm"
+))
 
 def display_image_from_url(image_url: string):
     print(f"Displaying image {image_url}")
@@ -91,7 +87,6 @@ def print_my_playlists():
     while playlists:
         for i, playlist in itertools.cycle(enumerate(playlists['items'])):
             display_image_from_url(playlist['images'][0]['url'])
-            time.sleep(2)
             # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
         if playlists['next']:
             playlists = spotify.next(playlists)
