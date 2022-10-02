@@ -9,11 +9,34 @@ from io import BytesIO
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth, SpotifyImplicitGrant
+
+import itertools
+
+scope = "user-library-read"
+client_id="beace81697df48ca99e0496bb79dba7c"
+client_secret="3d5a8e048c1b43ae86bfc6dd366efbd2"
+redirect_uri="http://raspi4/callback"
 
 my_username="vx9p6hddl4d7ymwuo1u3zvpxm"
 
-# spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+# def get_access_token(url, client_id, client_secret):
+#     response = requests.post(
+#         url,
+#         data={"grant_type": "client_credentials"},
+#         auth=(client_id, client_secret),
+#         timeout="30"
+#     )
+#     return response.json()["access_token"]
+
+auth_manager=SpotifyOAuth(
+    scope=scope,
+    username=my_username,
+    # open_browser=True,
+    # show_dialog=True
+)
+
+# spotify = spotipy.Spotify(auth_manager=auth_manager)
 
 # Initialize Spotify Client
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(
@@ -36,7 +59,7 @@ options.hardware_mapping = 'adafruit-hat-pwm'
 matrix = RGBMatrix(options=options)
 
 
-def displayImageFromURL(image_url: string):
+def display_image_from_url(image_url: string):
     print(f"Displaying image {image_url}")
 
     response = requests.get(image_url, stream=True)
@@ -52,27 +75,36 @@ def displayImageFromURL(image_url: string):
 
     matrix.SetImage(image.convert('RGB'))
 
-
-def main():
+def print_lz_top_songs():
     lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
 
     results = spotify.artist_top_tracks(lz_uri)
 
     for track in results['tracks'][:10]:
         image_url = track['album']['images'][0]['url']
-        displayImageFromURL(image_url)
+        display_image_from_url(image_url)
         time.sleep(2)
-    
+
+def print_my_playlists():
     playlists = spotify.user_playlists(my_username)
 
     while playlists:
-        for i, playlist in enumerate(playlists['items']):
-            playlist['images'][0]['url']
+        for i, playlist in itertools.cycle(enumerate(playlists['items'])):
+            display_image_from_url(playlist['images'][0]['url'])
+            time.sleep(2)
             # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
         if playlists['next']:
             playlists = spotify.next(playlists)
         else:
             playlists = None
+
+def print_current_track():
+    current = spotify.current_user_playing_track()
+    print(current)
+
+def main():
+    
+    print_my_playlists()
 
     try:
         print("Press CTRL-C to stop.")
