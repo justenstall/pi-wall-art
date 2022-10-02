@@ -5,14 +5,21 @@ import string
 import time
 import sys
 from typing import Any
-import io
+from io import BytesIO
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
+my_username="vx9p6hddl4d7ymwuo1u3zvpxm"
+
+# spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+
 # Initialize Spotify Client
-spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(
+    client_id="beace81697df48ca99e0496bb79dba7c",
+    client_secret="3d5a8e048c1b43ae86bfc6dd366efbd2",
+))
 
 # Configuration for the matrix
 options = RGBMatrixOptions()
@@ -28,17 +35,23 @@ options.hardware_mapping = 'adafruit-hat-pwm'
 # Initialize RGB Matrix object
 matrix = RGBMatrix(options=options)
 
+
 def displayImageFromURL(image_url: string):
     print(f"Displaying image {image_url}")
 
-    img_data = requests.get(image_url).content
+    response = requests.get(image_url, stream=True)
+    response.raise_for_status()
 
-    image = Image.open(io.BytesIO(img_data))
+    img_data = BytesIO(response.content)
+
+    image = Image.open(img_data)
 
     # Make image fit our screen.
-    image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+    image.thumbnail((matrix.width, matrix.height),
+                    Image.Resampling.LANCZOS)
 
     matrix.SetImage(image.convert('RGB'))
+
 
 def main():
     lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
@@ -47,36 +60,34 @@ def main():
 
     for track in results['tracks'][:10]:
         image_url = track['album']['images'][0]['url']
-        # print(image_url)
-        # displayImageFromURL(image_url)
-        print(f"Displaying image {image_url}")
-
-        img_data = requests.get(image_url).content
-
-        image = Image.open(io.BytesIO(img_data))
-
-        # Make image fit our screen.
-        image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
-
-        matrix.SetImage(image.convert('RGB'))
+        displayImageFromURL(image_url)
         time.sleep(2)
+    
+    playlists = spotify.user_playlists(my_username)
 
-    # image_url = results['tracks'][0]['album']['images'][0]['url']
-
-    # displayImageFromURL(image_url)
+    while playlists:
+        for i, playlist in enumerate(playlists['items']):
+            playlist['images'][0]['url']
+            # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
+        if playlists['next']:
+            playlists = spotify.next(playlists)
+        else:
+            playlists = None
 
     try:
-        # print("Press CTRL-C to stop.")
+        print("Press CTRL-C to stop.")
         while True:
             time.sleep(100)
     except KeyboardInterrupt:
         sys.exit(0)
+
 
 def listInfo(results: Any):
     for track in results['tracks'][:10]:
         print('track    : ' + track['name'])
         print('audio    : ' + track['preview_url'])
         print('cover art: ' + track['album']['images'][0]['url'])
+
 
 if __name__ == "__main__":
     main()
