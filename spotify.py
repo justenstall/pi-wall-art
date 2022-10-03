@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from mimetypes import init
+import PIL
 import requests
 import string
 import time
@@ -10,6 +11,7 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth, SpotifyImplicitGrant
+from urllib.request import urlopen
 
 import itertools
 
@@ -29,12 +31,12 @@ my_username="vx9p6hddl4d7ymwuo1u3zvpxm"
 #     )
 #     return response.json()["access_token"]
 
-auth_manager=SpotifyOAuth(
-    scope=scope,
-    username=my_username,
-    # open_browser=True,
-    # show_dialog=True
-)
+# auth_manager=SpotifyOAuth(
+#     scope=scope,
+#     username=my_username,
+#     # open_browser=True,
+#     # show_dialog=True
+# )
 
 # spotify = spotipy.Spotify(auth_manager=auth_manager)
 
@@ -45,21 +47,22 @@ spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(
 ))
 
 # Initialize RGB Matrix object
-matrix = RGBMatrix(options=RGBMatrixOptions(
-    rows=64,
-    cols=64,
-    brightness=70,
-    pwm_dither_bits=1,
-    chain_length=1,
-    parallel=1,
-    hardware_mapping="adafruit-hat-pwm"
-))
+matrix_options = RGBMatrixOptions()
+matrix_options.rows = 64
+matrix_options.cols = 64
+# matrix_options.show_refresh_rate = True
+matrix_options.brightness = 60
+matrix_options.pwm_dither_bits = 1
+matrix_options.chain_length = 1
+matrix_options.parallel = 1
+matrix_options.hardware_mapping = "adafruit-hat-pwm"
+
+matrix = RGBMatrix(options=matrix_options)
 
 def display_image_from_url(image_url: string):
     print(f"Displaying image {image_url}")
 
-    response = requests.get(image_url, stream=True)
-    response.raise_for_status()
+    response = requests.get(image_url)
 
     img_data = BytesIO(response.content)
 
@@ -83,11 +86,11 @@ def print_lz_top_songs():
 
 def print_my_playlists():
     playlists = spotify.user_playlists(my_username)
-
-    while playlists:
+    while spotify.user_playlists(my_username):
         for i, playlist in itertools.cycle(enumerate(playlists['items'])):
             display_image_from_url(playlist['images'][0]['url'])
             # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
+            time.sleep(2)
         if playlists['next']:
             playlists = spotify.next(playlists)
         else:
@@ -98,7 +101,9 @@ def print_current_track():
     print(current)
 
 def main():
-    
+    # matrix = init_matrix()
+
+    print(PIL.__version__)
     print_my_playlists()
 
     try:
