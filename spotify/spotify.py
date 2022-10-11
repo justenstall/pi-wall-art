@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from mimetypes import init
+import string
 import PIL
 import requests
-import string
 import time
 import sys
 from typing import Any
@@ -14,6 +14,8 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth, SpotifyImplic
 from urllib.request import urlopen
 
 import itertools
+
+from matrix.matrix import display_image_from_url
 
 scope = "user-library-read"
 client_id="beace81697df48ca99e0496bb79dba7c"
@@ -28,21 +30,6 @@ spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(
     client_secret=client_secret,
 ))
 
-def display_image_from_url(m: RGBMatrix, image_url: string):
-    print(f"Displaying image {image_url}")
-
-    response = requests.get(image_url)
-
-    img_data = BytesIO(response.content)
-
-    image = Image.open(img_data)
-
-    # Make image fit our screen.
-    image.thumbnail((m.width, m.height),
-                    Image.Resampling.LANCZOS)
-
-    m.SetImage(image.convert('RGB'))
-
 def print_lz_top_songs(m):
     lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
 
@@ -50,11 +37,13 @@ def print_lz_top_songs(m):
 
     for track in results['tracks'][:10]:
         image_url = track['album']['images'][0]['url']
-        display_image_from_url(image_url)
+        display_image_from_url(m=m, image_url=image_url)
         time.sleep(2)
 
 def print_my_playlists(m: RGBMatrix):
     playlists = spotify.user_playlists(my_username)
+    if playlists is None:
+        return
     while spotify.user_playlists(my_username):
         for i, playlist in itertools.cycle(enumerate(playlists['items'])):
             display_image_from_url(m, playlist['images'][0]['url'])

@@ -1,4 +1,8 @@
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
+import requests
+import string
+from PIL import Image
+from io import BytesIO
 
 def init_matrix():
 	# Initialize RGB Matrix object
@@ -16,3 +20,18 @@ def init_matrix():
 	matrix = RGBMatrix(options=matrix_options)
 
 	return matrix
+
+def display_image_from_url(m: RGBMatrix, image_url):
+    print(f"Displaying image {image_url}")
+
+    response = requests.get(image_url)
+
+    img_data = BytesIO(response.content)
+
+    image = Image.open(img_data)
+
+    # Make image fit our screen.
+    image.thumbnail((m.width, m.height),
+                    Image.Resampling.LANCZOS)
+
+    m.SetImage(image.convert('RGB'))
