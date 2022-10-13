@@ -20,7 +20,7 @@ def init_matrix():
 	matrix_options.chain_length = 1
 	matrix_options.parallel = 1
 	matrix_options.hardware_mapping = "adafruit-hat-pwm"
-	matrix_options.limit_refresh_rate_hz = 120
+	matrix_options.limit_refresh_rate_hz = 80 
 
 	matrix = RGBMatrix(options=matrix_options)
 
@@ -80,7 +80,7 @@ start_date = datetime.date(2022, 1, 1)
 today = datetime.date.today()
 daydelta = datetime.timedelta(days=1)
 
-while start_date <= today:
+while start_date < today:
   response = fetchAPOD(start_date.isoformat())
   if response['media_type'] == 'image' and 'url' in response:
     display_image_from_url(m, response['url'])
