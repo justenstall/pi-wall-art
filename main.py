@@ -1,8 +1,8 @@
 import time
 import sys
 
-from spotify import spotify
-from matrix import matrix
+from src import spotify
+from src import matrix
 
 def main():
 	m = matrix.init_matrix()

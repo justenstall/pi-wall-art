@@ -15,7 +15,7 @@ from urllib.request import urlopen
 
 import itertools
 
-from matrix.matrix import display_image_from_url
+from matrix import display_image_from_url
 
 scope = "user-library-read"
 client_id="beace81697df48ca99e0496bb79dba7c"
@@ -34,17 +34,15 @@ def print_lz_top_songs(m):
     lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
 
     results = spotify.artist_top_tracks(lz_uri)
-
-    for track in results['tracks'][:10]:
-        image_url = track['album']['images'][0]['url']
-        display_image_from_url(m=m, image_url=image_url)
-        time.sleep(2)
+    if results:
+        for track in results['tracks'][:10]:
+            image_url = track['album']['images'][0]['url']
+            display_image_from_url(m=m, image_url=image_url)
+            time.sleep(2)
 
 def print_my_playlists(m: RGBMatrix):
     playlists = spotify.user_playlists(my_username)
-    if playlists is None:
-        return
-    while spotify.user_playlists(my_username):
+    if playlists:
         for i, playlist in itertools.cycle(enumerate(playlists['items'])):
             display_image_from_url(m, playlist['images'][0]['url'])
             # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
