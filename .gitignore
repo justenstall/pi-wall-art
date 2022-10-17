@@ -16,3 +16,6 @@
 .cache
 
 node_modules
+
+src/__pycache__/
+*.py[cod]
