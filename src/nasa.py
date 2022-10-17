@@ -1,9 +1,6 @@
 import requests
-import time
-import sys
 import datetime
 from pprint import PrettyPrinter
-from PIL import Image, ImageOps
 from rgbmatrix import RGBMatrix
 import matrix
 
