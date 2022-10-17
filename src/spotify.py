@@ -15,7 +15,7 @@ from urllib.request import urlopen
 
 import itertools
 
-from matrix import display_image_from_url
+import matrix
 
 scope = "user-library-read"
 client_id="beace81697df48ca99e0496bb79dba7c"
@@ -37,20 +37,14 @@ def print_lz_top_songs(m):
     if results:
         for track in results['tracks'][:10]:
             image_url = track['album']['images'][0]['url']
-            display_image_from_url(m=m, image_url=image_url)
+            matrix.display_image_from_url(m=m, image_url=image_url)
             time.sleep(2)
 
 def print_my_playlists(m: RGBMatrix):
-    playlists = spotify.user_playlists(my_username)
-    if playlists:
-        for i, playlist in itertools.cycle(enumerate(playlists['items'])):
-            display_image_from_url(m, playlist['images'][0]['url'])
-            # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
-            time.sleep(2)
-        if playlists['next']:
-            playlists = spotify.next(playlists)
-        else:
-            playlists = None
+    response = spotify.user_playlists(my_username)
+    if response:
+        image_urls = [playlist['images'][0]['url'] for playlist in response['items']]
+        matrix.loopImageURLs(m, image_urls, processing_funcs=[matrix.fit])
 
 def print_current_track(m: RGBMatrix):
     current = spotify.current_user_playing_track()
@@ -61,3 +55,5 @@ def listInfo(results: Any):
         print('track    : ' + track['name'])
         print('audio    : ' + track['preview_url'])
         print('cover art: ' + track['album']['images'][0]['url'])
+
+print_my_playlists(matrix.init_matrix())

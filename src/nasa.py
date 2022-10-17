@@ -3,6 +3,7 @@ import datetime
 from pprint import PrettyPrinter
 from rgbmatrix import RGBMatrix
 import matrix
+from PIL import ImageOps
 
 apiKey = 'IdK13tM9IR9PhWbCLfgi9esC7Gig5R2ItfDbOH2C'
 
@@ -60,12 +61,8 @@ def randomAPODs(m: RGBMatrix):
 
   image_urls = [r['url'] for r in responses if r['media_type'] == 'image']
 
-  # for response in responses:
-  #   if response['media_type'] == 'image' and 'url' in response:
-  #     image_urls.append(response['url'])
+  pp.pprint(image_urls)
 
-  matrix.loopImageURLs(m, image_urls)
+  matrix.loopImageURLs(m, image_urls, processing_funcs=[matrix.fill, ImageOps.autocontrast])
 
 randomAPODs(matrix.init_matrix())
-
-# TODO: cache images with the processing, so the processing only happens the first time the image is displayed, then delete the temp folder of images after execution
