@@ -15,7 +15,7 @@ from urllib.request import urlopen
 
 import itertools
 
-import matrix
+from matrix import Matrix
 
 scope = "user-library-read"
 client_id="beace81697df48ca99e0496bb79dba7c"
@@ -30,21 +30,21 @@ spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(
     client_secret=client_secret,
 ))
 
-def print_lz_top_songs(m):
+def print_lz_top_songs(m: Matrix):
     lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
 
     results = spotify.artist_top_tracks(lz_uri)
     if results:
         for track in results['tracks'][:10]:
             image_url = track['album']['images'][0]['url']
-            matrix.display_image_from_url(m=m, image_url=image_url)
+            m.display_image_from_url(image_url)
             time.sleep(2)
 
-def print_my_playlists(m: RGBMatrix):
+def print_my_playlists(m: Matrix):
     response = spotify.user_playlists(my_username)
     if response:
         image_urls = [playlist['images'][0]['url'] for playlist in response['items']]
-        matrix.loopImageURLs(m, image_urls, processing_funcs=[matrix.fit])
+        m.loopImageURLs(image_urls)
 
 def print_current_track(m: RGBMatrix):
     current = spotify.current_user_playing_track()
@@ -56,4 +56,7 @@ def listInfo(results: Any):
         print('audio    : ' + track['preview_url'])
         print('cover art: ' + track['album']['images'][0]['url'])
 
-print_my_playlists(matrix.init_matrix())
+m = Matrix()
+m.resampling = Image.Resampling.NEAREST
+
+print_my_playlists(Matrix())

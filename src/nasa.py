@@ -1,8 +1,7 @@
 import requests
 import datetime
 from pprint import PrettyPrinter
-from rgbmatrix import RGBMatrix
-import matrix
+from matrix import Matrix
 from PIL import ImageOps
 
 apiKey = 'IdK13tM9IR9PhWbCLfgi9esC7Gig5R2ItfDbOH2C'
@@ -37,32 +36,32 @@ def fetchRandomAPOD(count=1):
 
   return response
 
-def loopAPODs(m: RGBMatrix):
+def loopAPODs(m: Matrix):
   start_date = datetime.date(2022, 1, 1)
   today = datetime.date.today()
   daydelta = datetime.timedelta(days=1)
 
-  apodImages = []
+  image_urls = []
 
   # currentImage = Image.new('RGB', (64, 64), (0, 0, 0, 0))
 
   while start_date < today:
     response = fetchAPOD(start_date.isoformat())
     if response['media_type'] == 'image' and 'url' in response:
-      im = matrix.get_image_from_url(response['url'])
-      im = matrix.fill(im, size=64)
-      apodImages.append(im)
+      image_urls.append(response['url'])
     start_date += daydelta
   
-  matrix.loopImages(m, apodImages)
+  m.loopImageURLs(image_urls)
 
-def randomAPODs(m: RGBMatrix):
+def randomAPODs(m: Matrix):
   responses = fetchRandomAPOD(count=30)
 
   image_urls = [r['url'] for r in responses if r['media_type'] == 'image']
 
   pp.pprint(image_urls)
 
-  matrix.loopImageURLs(m, image_urls, processing_funcs=[matrix.fill, ImageOps.autocontrast])
+  m.loopImageURLs(image_urls)
 
-randomAPODs(matrix.init_matrix())
+m = Matrix()
+m.set_image_processing([m.fill, ImageOps.autocontrast])
+randomAPODs(m)
