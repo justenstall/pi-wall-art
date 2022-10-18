@@ -1,14 +1,14 @@
 import requests, time, itertools, os
 
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageFont, ImageDraw
 from io import BytesIO
 from typing import Callable, Union
 from urllib.parse import urlparse
 import imagehash
 
 class Matrix:
-    def __init__(self, brightness: int=100, limit_refresh_rate_hz: int=-1, show_refresh_rate: bool=False) -> None:
+    def __init__(self, brightness: int=100, limit_refresh_rate_hz: int=-1, show_refresh_rate: bool=False, font: str='/home/pi/pi-wall-art/fonts/4x6.bdf') -> None:
         # Initialize RGB Matrix object
         self.options = RGBMatrixOptions()
         self.options.rows = 64
@@ -18,6 +18,7 @@ class Matrix:
         self.options.chain_length = 1
         self.options.parallel = 1
         self.options.hardware_mapping = "adafruit-hat-pwm"
+        self.options.drop_privileges = False
         
         self.options.show_refresh_rate = show_refresh_rate
         if limit_refresh_rate_hz > 0:
@@ -34,6 +35,8 @@ class Matrix:
         self.resampling = Image.Resampling.LANCZOS
 
         self.image = Image.new('RGB', (64, 64))
+
+        # self.font = ImageFont.load(font)
     
     # Set the image processing functions that will run on each image displayed to the matrix
     def set_image_processing(self, processing_funcs: list[Callable[[Image.Image], Image.Image]]):
@@ -46,17 +49,20 @@ class Matrix:
         # processed_image_cache = 'processed_images'
         for i, image_url in itertools.cycle(enumerate(image_urls)):
             im = Image.new('RGB', size=(self.matrix.width, self.matrix.height))
-
             if image_url in self.image_cache:
                 im = self.image_cache[image_url]
             else:
                 im = self.get_image_from_url(image_url)
                 self.image_cache[image_url] = im
+
             if len(image_descriptions) >= i:
                 self.show(im, description=image_descriptions[i])
+                time.sleep(5)
+                self.show(im)
+                time.sleep(7)
             else:
                 self.show(im)
-            time.sleep(10)
+                time.sleep(10)
 
     def process_image(self, im: Image.Image) -> Image.Image:
         for func in self.processing_funcs: im = func(im)
@@ -73,18 +79,27 @@ class Matrix:
 
     def show(self, im: Image.Image, description: Union[str,None]=None):
         image_hash = imagehash.average_hash(im)
+        description_hash = f"{image_hash}-{description}"
         if image_hash in self.image_cache:
             # print('using image from cache')
             im = self.image_cache[image_hash]
+            if description_hash in self.image_cache:
+                im = self.image_cache[description_hash]
         else:
             im = self.process_image(im)
             self.image_cache[image_hash] = im
+            if description:
+                description_image = im.copy()
+                print(description)
+                draw = ImageDraw.Draw(description_image)
+                left_offset = (self.matrix.width-draw.textlength(description))/2
+                top_offest = self.matrix.height-left_offset-9
+                draw.text((left_offset, top_offest), description, fill=(255, 255, 255, 128))
+                im = description_image
+                self.image_cache[description_hash] = im
 
         self.matrix.SetImage(im)
         self.image = im
-        if description:
-            print(description)
-            # self.overlay_text(description)
     
     def display_image_from_url(self, image_url: str):
         print(f"Displaying image {image_url}")

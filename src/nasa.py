@@ -62,11 +62,12 @@ def random_apods(m: Matrix, count: int=30):
   for r in responses:
     if r['media_type'] == 'image':
       image_urls.append(r['url'])
-      image_descriptions.append(f"{r['date']}: {r['title']}")
+      # image_descriptions.append(f"{r['date']}: {r['title']}")
+      image_descriptions.append(r['date'])
 
   m.loop_images(image_urls, image_descriptions=image_descriptions)
 
 m = Matrix()
 m.set_image_processing([m.fill, ImageOps.autocontrast])
 
-random_apods(m)
+random_apods(m, count=30)
