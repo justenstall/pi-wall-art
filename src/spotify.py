@@ -44,7 +44,7 @@ def print_my_playlists(m: Matrix):
     response = spotify.user_playlists(my_username)
     if response:
         image_urls = [playlist['images'][0]['url'] for playlist in response['items']]
-        m.loopImageURLs(image_urls)
+        m.loop_images(image_urls)
 
 def print_current_track(m: RGBMatrix):
     current = spotify.current_user_playing_track()

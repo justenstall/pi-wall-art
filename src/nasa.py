@@ -22,7 +22,7 @@ def fetchAPOD(date='2020-01-22'):
 
   return response
 
-def fetchRandomAPOD(count=1):
+def fetch_random_apod(count=1):
   URL_APOD = "https://api.nasa.gov/planetary/apod"
 
   params = {
@@ -36,7 +36,7 @@ def fetchRandomAPOD(count=1):
 
   return response
 
-def loopAPODs(m: Matrix):
+def loop_apods(m: Matrix):
   start_date = datetime.date(2022, 1, 1)
   today = datetime.date.today()
   daydelta = datetime.timedelta(days=1)
@@ -51,17 +51,22 @@ def loopAPODs(m: Matrix):
       image_urls.append(response['url'])
     start_date += daydelta
   
-  m.loopImageURLs(image_urls)
+  m.loop_images(image_urls)
 
-def randomAPODs(m: Matrix):
-  responses = fetchRandomAPOD(count=30)
+def random_apods(m: Matrix, count: int=30):
+  responses = fetch_random_apod(count=count)
 
-  image_urls = [r['url'] for r in responses if r['media_type'] == 'image']
+  image_urls = []
+  image_descriptions = []
 
-  pp.pprint(image_urls)
+  for r in responses:
+    if r['media_type'] == 'image':
+      image_urls.append(r['url'])
+      image_descriptions.append(f"{r['date']}: {r['title']}")
 
-  m.loopImageURLs(image_urls)
+  m.loop_images(image_urls, image_descriptions=image_descriptions)
 
 m = Matrix()
 m.set_image_processing([m.fill, ImageOps.autocontrast])
-randomAPODs(m)
+
+random_apods(m)

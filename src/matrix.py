@@ -1,10 +1,11 @@
 import requests, time, itertools, os
 
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 from PIL import Image, ImageOps
 from io import BytesIO
 from typing import Callable, Union
 from urllib.parse import urlparse
+import imagehash
 
 class Matrix:
     def __init__(self, brightness: int=100, limit_refresh_rate_hz: int=-1, show_refresh_rate: bool=False) -> None:
@@ -25,11 +26,14 @@ class Matrix:
         self.matrix = RGBMatrix(options=self.options)
 
         # Caching features initialization
-        self.image_cache = 'image_cache'
+        self.image_cache_dir = 'image_cache'
+        self.image_cache = {}
 
         self.processing_funcs: list[Callable[[Image.Image], Image.Image]] = [self.fill]
 
         self.resampling = Image.Resampling.LANCZOS
+
+        self.image = Image.new('RGB', (64, 64))
     
     # Set the image processing functions that will run on each image displayed to the matrix
     def set_image_processing(self, processing_funcs: list[Callable[[Image.Image], Image.Image]]):
@@ -37,17 +41,21 @@ class Matrix:
     
     def add_image_processing(self, processing_func: Callable[[Image.Image], Image.Image]):
         self.processing_funcs.append(processing_func)
-    
-    def loopImageURLs(self, image_urls: list[str]):
-        # processed_image_cache = 'processed_images'
-        for _, image_url in itertools.cycle(enumerate(image_urls)):
-            im = self.get_image_from_url(image_url)
-            self.show(im)
-            time.sleep(5)
 
-    def loopImages(self, images: list[Image.Image]):
-        for i, im in itertools.cycle(enumerate(images)):
-            self.show(im)
+    def loop_images(self, image_urls: list[str], image_descriptions: list[str]=[]):
+        # processed_image_cache = 'processed_images'
+        for i, image_url in itertools.cycle(enumerate(image_urls)):
+            im = Image.new('RGB', size=(self.matrix.width, self.matrix.height))
+
+            if image_url in self.image_cache:
+                im = self.image_cache[image_url]
+            else:
+                im = self.get_image_from_url(image_url)
+                self.image_cache[image_url] = im
+            if len(image_descriptions) >= i:
+                self.show(im, description=image_descriptions[i])
+            else:
+                self.show(im)
             time.sleep(10)
 
     def process_image(self, im: Image.Image) -> Image.Image:
@@ -59,29 +67,24 @@ class Matrix:
         return im
     
     def get_image_from_url(self, image_url: str):
-        # Check cached images
-        # image_name = os.path.basename(urlparse(image_url).path)
-        # cached_image_path = os.path.join(cache_folder, image_name)
-        # if os.path.exists(cached_image_path):
-        #     print("Reading image from cache")
-        #     return Image.open(cached_image_path)
-
         img_data = BytesIO(requests.get(image_url).content)
-
         im = Image.open(img_data)
-
-        # try:
-        #     os.makedirs(cache_folder, exist_ok = True)
-        #     # print("Directory '%s' created successfully" % cache_folder)
-        #     im.save(cached_image_path, "JPEG")
-        # except OSError as error:
-        #     print("Directory '%s' cannot be created" % cache_folder)    
-
         return im
 
-    def show(self, im: Image.Image):
-        im = self.process_image(im)
+    def show(self, im: Image.Image, description: Union[str,None]=None):
+        image_hash = imagehash.average_hash(im)
+        if image_hash in self.image_cache:
+            # print('using image from cache')
+            im = self.image_cache[image_hash]
+        else:
+            im = self.process_image(im)
+            self.image_cache[image_hash] = im
+
         self.matrix.SetImage(im)
+        self.image = im
+        if description:
+            print(description)
+            # self.overlay_text(description)
     
     def display_image_from_url(self, image_url: str):
         print(f"Displaying image {image_url}")
@@ -104,5 +107,25 @@ class Matrix:
 
     def fill(self, im: Image.Image, ):
         return ImageOps.fit(im, (self.matrix.width, self.matrix.height), self.resampling).convert('RGB')
+
+
+    # Based on: https://github.com/hzeller/rpi-rgb-led-matrix/blob/master/bindings/python/samples/runtext.py
+    def overlay_text(self, text: str):
+        offscreen_canvas = self.matrix.CreateFrameCanvas()
+        font = graphics.Font()
+        font.LoadFont("../fonts/7x13.bdf")
+        textColor = graphics.Color(255, 255, 255)
+        pos = offscreen_canvas.width
+
+        while True:
+            offscreen_canvas.Clear()
+            offscreen_canvas.SetImage(self.image)
+            len = graphics.DrawText(offscreen_canvas, font, pos, 10, textColor, text)
+            pos -= 1
+            if (pos + len < 0):
+                pos = offscreen_canvas.width
+
+            time.sleep(0.05)
+            offscreen_canvas = self.matrix.SwapOnVSync(offscreen_canvas)
 
 # TODO: cache images with the processing, so the processing only happens the first time the image is displayed, then delete the temp folder of images after execution
