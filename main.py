@@ -2,10 +2,10 @@ import time
 import sys
 
 from src import spotify
-from src import matrix
+from src.matrix import Matrix
 
 def main():
-	m = matrix.init_matrix()
+	m = Matrix()
 	spotify.print_my_playlists(m)
 
 	try:

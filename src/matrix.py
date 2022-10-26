@@ -35,8 +35,6 @@ class Matrix:
         self.resampling = Image.Resampling.LANCZOS
 
         self.image = Image.new('RGB', (64, 64))
-
-        # self.font = ImageFont.load(font)
     
     # Set the image processing functions that will run on each image displayed to the matrix
     def set_image_processing(self, processing_funcs: list[Callable[[Image.Image], Image.Image]]):
