@@ -1,4 +1,5 @@
 import itertools
+import random
 from PIL import Image, ImageDraw
 from matrix import Matrix
 import time
@@ -14,7 +15,7 @@ class Gradient:
   #   sns.color_palette("magma", as_cmap=True)
         pass
 
-    def gradient_looping():
+    def gradient_looping(self):
         # end
         print('hi')
 
@@ -105,6 +106,26 @@ def scrolling_polylinear_gradient(m: Matrix):
         m.matrix.SetImage(grim)
         time.sleep(.05)
 
+def infinite_random_gradient(m: Matrix):
+    random.seed()
+    color1 = (random.randrange(255), random.randrange(255), random.randrange(255))
+    color2 = (random.randrange(255), random.randrange(255), random.randrange(255))
+    while True:
+        color3 = (random.randrange(255), random.randrange(255), random.randrange(255))
+        gradient1 = [list(c) for c in linear_gradient(color1, color2)]
+        # print("gradient1:", gradient1)
+        gradient2 = [list(c) for c in linear_gradient(color2, color3)]
+        # print("gradient2:", gradient2)
+        for offset in itertools.cycle(range(len(gradient1))):
+            imarray = np.empty([64, 64, 3], dtype=np.uint8)
+            imarray[:, 0:offset] = gradient2[len(gradient2)-offset:len(gradient2)]
+            imarray[:, offset:(len(imarray[0]))] = gradient1[0:len(gradient1)-offset]
+            grim = Image.fromarray(imarray, mode='RGB')
+            m.matrix.SetImage(grim)
+            time.sleep(.05)
+        color1 = color2
+        color2 = color3
 
 m = Matrix(brightness=60)
-scrolling_linear_gradient(m)
+# scrolling_linear_gradient(m)
+infinite_random_gradient(m)
