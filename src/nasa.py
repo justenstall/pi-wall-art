@@ -12,7 +12,6 @@ pp = PrettyPrinter()
 APOD API
 '''
 
-
 def fetch_apod(date='2020-01-22'):
     URL_APOD = "https://api.nasa.gov/planetary/apod"
 
