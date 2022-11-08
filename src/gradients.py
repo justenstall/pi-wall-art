@@ -48,14 +48,9 @@ def linear_gradient(start_color: tuple[int, int, int], end_color: tuple[int, int
     # Calcuate a color at each evenly spaced value of t from 1 to n
     for i in range(1, stops):
         # Interpolate RGB vector for color at the current value of t
-        color_i = tuple(
-            int(start_color[j] + (float(i)/float(stops-1))
-                * (end_color[j]-start_color[j]))
-            for j in range(3)
-        )
+        color_i = tuple(int(start_color[j] + (float(i)/float(stops-1)) * (end_color[j]-start_color[j])) for j in range(3))
         # Add it to our list of output colors
         color_list.append(color_i)
-
     return color_list
 
 def polylinear_gradient(colors: List[tuple[int, int, int]], stops: int = 64):
@@ -92,52 +87,130 @@ def scrolling_linear_gradient(m: Matrix):
         m.matrix.SetImage(grim)
         time.sleep(.05)
 
-def scrolling_polylinear_gradient(m: Matrix):
-    half_gradient = polylinear_gradient([(255, 100, 255), (50, 50, 250), (255, 0, 0)], stops=32)
-    reverse_gradient = half_gradient.copy()
-    reverse_gradient.reverse()
-    gradient = half_gradient + reverse_gradient
-
-    for offset in itertools.cycle(range(64)):
-        imarray = np.empty([64, 64, 3], dtype=np.uint8)
-        for i, color in enumerate(gradient):
-            imarray[:, (i+offset) % 64] = list(color)
-            # imarray[:, (63-offset)] = list(color)
-        grim = Image.fromarray(imarray, mode='RGB')
-        m.matrix.SetImage(grim)
-        time.sleep(.05)
-
 def infinite_random_gradient(m: Matrix):
     '''
         Gradient scrolling
 
         color1 --> color2 --> color3
 
-        gradient_1 [ color1 --> color2 ] --> gradient_2 [ color2 --> color3 ]
+        gradient1 [ color1 --> color2 ] --> gradient2 [ color2 --> color3 ]
     '''
     random.seed()
-    color1 = (random.randrange(255), random.randrange(255), random.randrange(255))
-    color2 = (random.randrange(255), random.randrange(255), random.randrange(255))
-    color3 = (random.randrange(255), random.randrange(255), random.randrange(255))
-    gradient_1 = [list(c) for c in linear_gradient(color1, color2)]
-    gradient_2 = [list(c) for c in linear_gradient(color2, color3)]
+    color1 = random_color()
+    color2 = random_color()
+    color3 = random_color()
+    gradient1 = [list(c) for c in linear_gradient(color1, color2)]
+    gradient2 = [list(c) for c in linear_gradient(color2, color3)]
     while True:
-        # print("gradient_1:", gradient_1)
+        # print("gradient1:", gradient1)
         imarray = np.empty([64, 64, 3], dtype=np.uint8)
         for offset in range(64):
             for i in range(0, offset):
-                imarray[i, :] = gradient_1[(64-offset)+i]
+                imarray[i, :] = gradient1[(64-offset)+i]
             for i in range(offset, 64):
-                imarray[i, :] = gradient_2[i-offset]
+                imarray[i, :] = gradient2[i-offset]
             grim = Image.fromarray(imarray, mode='RGB')
             m.matrix.SetImage(grim)
             time.sleep(.005)
         color3 = color2
         color2 = color1
-        color1 = (random.randrange(255), random.randrange(255), random.randrange(255))
-        gradient_2 = gradient_1
-        gradient_1 = [list(c) for c in linear_gradient(color1, color2)]
+        color1 = random_color()
+        gradient2 = gradient1
+        gradient1 = [list(c) for c in linear_gradient(color1, color2)]
 
-m = Matrix(brightness=40)
-# scrolling_linear_gradient(m)
+def infinite_random_size_gradient(m: Matrix):
+    def rand_gradient_length():
+        return random.randrange(10, 200)
+    '''
+        Gradient scrolling
+
+        color1 --> color2 --> color3
+
+        gradient1 [ color1 --> color2 ] --> gradient2 [ color2 --> color3 ]
+    '''
+    color1 = random_color()
+    color2 = random_color()
+    color3 = random_color()
+    length1 = rand_gradient_length()
+    length2 = rand_gradient_length()
+    gradient1 = [list(c) for c in linear_gradient(color1, color2, stops=length1)]
+    gradient2 = [list(c) for c in linear_gradient(color2, color3, stops=length2)]
+    while True:
+        # Make RGB Matrix-sized array 
+        imarray = np.empty([length1+length2, 64, 3], dtype=np.uint8)
+
+        # Loop through the length of both gradients to transition to the next gradient
+        for offset in range(length1+length2):
+            for i in range(0, min(offset, 64)):
+                imarray[i, :] = gradient1[(len(gradient1)-offset)+i]
+            for i in range(offset, 64):
+                imarray[i, :] = gradient2[i-offset]
+            grim = Image.fromarray(imarray, mode='RGB')
+            m.matrix.SetImage(grim)
+            time.sleep(.01)
+
+        # Iterate colors and create the next color
+        color3 = color2
+        color2 = color1
+        color1 = random_color()
+
+        # Set random length for next gradient
+        length2 = length1
+        length1 = rand_gradient_length()
+
+        # Create next gradient
+        gradient2 = gradient1
+        gradient1 = [list(c) for c in linear_gradient(color1, color2, stops=length1)]
+
+from gpiozero import MCP3008
+
+def gradient_speed_control(m: Matrix):
+    '''
+        Gradient scrolling
+
+        color1 --> color2 --> color3
+
+        gradient1 [ color1 --> color2 ] --> gradient2 [ color2 --> color3 ]
+    '''
+    random.seed()
+    pot = MCP3008(7)
+    color1 = random_color()
+    color2 = random_color()
+    color3 = random_color()
+    gradient1 = [list(c) for c in linear_gradient(color1, color2)]
+    gradient2 = [list(c) for c in linear_gradient(color2, color3)]
+    while True:
+        print(pot.value)
+        # print("gradient1:", gradient1)
+        imarray = np.empty([64, 64, 3], dtype=np.uint8)
+        for offset in range(64):
+            for i in range(0, offset):
+                imarray[i, :] = gradient1[(64-offset)+i]
+            for i in range(offset, 64):
+                imarray[i, :] = gradient2[i-offset]
+            grim = Image.fromarray(imarray, mode='RGB')
+            m.matrix.SetImage(grim)
+            time.sleep(.005)
+        color3 = color2
+        color2 = color1
+        color1 = random_color()
+        gradient2 = gradient1
+        gradient1 = [list(c) for c in linear_gradient(color1, color2)]
+
+def random_color():
+    return (random.randrange(255), random.randrange(255), random.randrange(255))
+
+brightness = 50
+if len(sys.argv) > 1:
+    brightness = int(sys.argv[1])
+
+m = Matrix(brightness=brightness)
+
+# infinite_random_size_gradient(m)
 infinite_random_gradient(m)
+
+
+# pot = MCP3008(1)
+# while True:
+#     print(pot.value)
+#     time.sleep(.1)
