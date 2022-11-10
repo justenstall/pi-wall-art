@@ -9,3 +9,6 @@ shutdown_btn = Button(3, hold_time=1)
 shutdown_btn.when_held = shutdown
 
 pause()
+
+# Copy to /usr/local/bin
+# cp shutdown-button.py /usr/local/bin
