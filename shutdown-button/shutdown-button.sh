@@ -14,7 +14,7 @@
 case "$1" in
   start)
     echo "Starting shutdown-button.py"
-    python /usr/local/bin/shutdown-button.py &
+    /usr/local/bin/shutdown-button.py &
     ;;
   stop)
     echo "Stopping shutdown-button.py"

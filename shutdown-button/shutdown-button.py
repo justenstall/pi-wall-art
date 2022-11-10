@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from gpiozero import Button
 from subprocess import check_call
 from signal import pause
