@@ -8,17 +8,17 @@ Experimenting currently
 
 Available on Adafruit Bonnet:
 
-- SCL
-- SDA
-- RX
-- TX
-- #25
-- MOSI
-- MISO
-- SCLK
-- CE0
-- CE1
-- #19
+- 3: SCL
+- 2: SDA
+- 15: RX
+- 14: TX
+- 25
+- 10: MOSI
+- 9: MISO
+- 11: SCLK
+- 8: CE0
+- 7: CE1
+- 19
 
 Pin 24 is taken up by the 1/32 scan (64x64 matrix)
 

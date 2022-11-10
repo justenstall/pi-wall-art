@@ -1,7 +1,6 @@
-from audioop import reverse
 import itertools
 import random
-from PIL import Image, ImageDraw
+from PIL import Image
 from matrix import Matrix
 import time
 import sys

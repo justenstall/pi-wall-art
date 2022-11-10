@@ -53,14 +53,14 @@ class Matrix:
                 im = self.get_image_from_url(image_url)
                 self.image_cache[image_url] = im
 
-            if len(image_descriptions) >= i:
-                self.show(im, description=image_descriptions[i])
-                time.sleep(5)
-                self.show(im)
-                time.sleep(7)
-            else:
-                self.show(im)
-                time.sleep(10)
+            # if len(image_descriptions) >= i:
+            #     self.show(im, description=image_descriptions[i])
+            #     time.sleep(5)
+            #     self.show(im)
+            #     time.sleep(7)
+            # else:
+            self.show(im)
+            time.sleep(10)
 
     def process_image(self, im: Image.Image) -> Image.Image:
         for func in self.processing_funcs: im = func(im)
@@ -126,7 +126,7 @@ class Matrix:
     def overlay_text(self, text: str):
         offscreen_canvas = self.matrix.CreateFrameCanvas()
         font = graphics.Font()
-        font.LoadFont("../fonts/7x13.bdf")
+        font.LoadFont("../fonts/5x7.bdf")
         textColor = graphics.Color(255, 255, 255)
         pos = offscreen_canvas.width
 
