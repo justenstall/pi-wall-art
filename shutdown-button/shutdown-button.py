@@ -11,4 +11,4 @@ shutdown_btn.when_held = shutdown
 pause()
 
 # Copy to /usr/local/bin
-# cp shutdown-button.py /usr/local/bin
+# sudo cp shutdown-button.py /usr/local/bin

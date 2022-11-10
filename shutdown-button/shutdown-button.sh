@@ -14,7 +14,7 @@
 case "$1" in
   start)
     echo "Starting shutdown-button.py"
-    /usr/local/bin/shutdown-button.py &
+    python /usr/local/bin/shutdown-button.py &
     ;;
   stop)
     echo "Stopping shutdown-button.py"
@@ -29,7 +29,7 @@ esac
 exit 0
 
 # Copy into /etc/init.d
-# sudo mv shutdown-button.sh /etc/init.d/
+# sudo cp shutdown-button.sh /etc/init.d
 # sudo update-rc.d shutdown-button.sh defaults
 
 # Based on: https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi
