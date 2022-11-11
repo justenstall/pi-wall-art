@@ -10,7 +10,7 @@ import sys
 import numpy as np
 from typing import List
 
-def digital_clock(m: Matrix):
+def digital_clock(m: Matrix = Matrix()):
 	while True:
 		current_time = time.clock_gettime(time.CLOCK_REALTIME)
 		current_datetime = datetime.now()
@@ -25,7 +25,7 @@ def digital_clock(m: Matrix):
 		print(f"{hour}:{minute}")
 		time.sleep(1)
 
-def analog_clock(m: Matrix):
+def analog_clock(m: Matrix = Matrix()):
 	hour_hand_length = 10
 	minute_hand_length = 20
 	center_point = (32, 32)
@@ -60,6 +60,6 @@ def analog_clock(m: Matrix):
 		print(f"{hour}:{minute}")
 		time.sleep(5)
 
-m = Matrix()
+# m = Matrix()
 
-analog_clock(m)
+# analog_clock(m)

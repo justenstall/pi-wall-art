@@ -71,7 +71,7 @@ def polylinear_gradient(colors: List[tuple[int, int, int]], stops: int = 64):
     return gradient_dict
 
 
-def scrolling_linear_gradient(m: Matrix):
+def scrolling_linear_gradient(m: Matrix = Matrix()):
     half_gradient = linear_gradient((255, 100, 255), (50, 50, 250), stops=32)
     reverse_gradient = half_gradient.copy()
     reverse_gradient.reverse()
@@ -86,7 +86,7 @@ def scrolling_linear_gradient(m: Matrix):
         m.matrix.SetImage(grim)
         time.sleep(.05)
 
-def infinite_random_gradient(m: Matrix):
+def infinite_random_gradient(m: Matrix = Matrix()):
     '''
         Gradient scrolling
 
@@ -117,7 +117,7 @@ def infinite_random_gradient(m: Matrix):
         gradient2 = gradient1
         gradient1 = [list(c) for c in linear_gradient(color1, color2)]
 
-def infinite_random_size_gradient(m: Matrix):
+def infinite_random_size_gradient(m: Matrix = Matrix()):
     def rand_gradient_length():
         return random.randrange(10, 200)
     '''
@@ -163,7 +163,7 @@ def infinite_random_size_gradient(m: Matrix):
 
 from gpiozero import MCP3008
 
-def gradient_speed_control(m: Matrix):
+def gradient_speed_control(m: Matrix = Matrix()):
     '''
         Gradient scrolling
 
@@ -199,14 +199,14 @@ def gradient_speed_control(m: Matrix):
 def random_color():
     return (random.randrange(255), random.randrange(255), random.randrange(255))
 
-brightness = 50
-if len(sys.argv) > 1:
-    brightness = int(sys.argv[1])
+# brightness = 50
+# if len(sys.argv) > 1:
+#     brightness = int(sys.argv[1])
 
-m = Matrix(brightness=brightness)
+# m = Matrix(brightness=brightness)
 
-# infinite_random_size_gradient(m)
-infinite_random_gradient(m)
+# # infinite_random_size_gradient(m)
+# infinite_random_gradient(m)
 
 
 # pot = MCP3008(1)

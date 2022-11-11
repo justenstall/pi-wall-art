@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from mimetypes import init
 import string
 import PIL
@@ -30,7 +29,7 @@ spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(
     client_secret=client_secret,
 ))
 
-def print_lz_top_songs(m: Matrix):
+def print_lz_top_songs(m: Matrix = Matrix()):
     lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
 
     results = spotify.artist_top_tracks(lz_uri)
@@ -40,7 +39,7 @@ def print_lz_top_songs(m: Matrix):
             m.display_image_from_url(image_url)
             time.sleep(2)
 
-def print_my_playlists(m: Matrix):
+def print_my_playlists(m: Matrix = Matrix()):
     response = spotify.user_playlists(my_username)
     if response:
         image_urls = [playlist['images'][0]['url'] for playlist in response['items']]
@@ -56,7 +55,7 @@ def listInfo(results: Any):
         print('audio    : ' + track['preview_url'])
         print('cover art: ' + track['album']['images'][0]['url'])
 
-m = Matrix()
-m.resampling = Image.Resampling.NEAREST
+# m = Matrix()
+# m.resampling = Image.Resampling.NEAREST
 
-print_my_playlists(Matrix())
+# print_my_playlists(Matrix())
