@@ -76,6 +76,7 @@ class Matrix:
         return im
 
     def show(self, im: Image.Image, description: Union[str,None]=None):
+        self.matrix.Clear()
         image_hash = imagehash.average_hash(im)
         description_hash = f"{image_hash}-{description}"
         if image_hash in self.image_cache:
