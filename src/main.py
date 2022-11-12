@@ -25,7 +25,7 @@ m = Matrix()
 print(f"Starting mode {MODE_FUNCS[mode].__name__}")
 matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(m,), daemon=True)
 matrix_thread.start()
-
+# https://stackoverflow.com/questions/32922909/how-to-stop-an-infinite-loop-safely-in-python
 def iter_mode():
 	global mode, matrix_thread
 	m = Matrix()
