@@ -12,11 +12,6 @@ pp = PrettyPrinter()
 APOD API
 '''
 
-def run():
-    m = Matrix()
-    m.set_image_processing([m.fill, ImageOps.autocontrast])
-    random_apods(m, count=30)
-
 def fetch_apod(date='2020-01-22'):
     URL_APOD = "https://api.nasa.gov/planetary/apod"
 

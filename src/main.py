@@ -1,6 +1,7 @@
 import time
 import sys
 import itertools
+from PIL import Image, ImageOps
 
 # import spotify
 import nasa
@@ -11,7 +12,22 @@ from gpiozero import Button
 from signal import pause
 import multiprocessing as mp
 
-MODE_FUNCS = [gradients.run, nasa.run]
+def nasa_apods(brightness=65):
+	m = Matrix(brightness=brightness)
+	im = Image.open('../images/nasa.jpg')
+	m.show(im)
+	m.set_image_processing([m.fill, ImageOps.autocontrast])
+	nasa.random_apods(m, count=30)
+
+def gradient(brightness=65):
+	m = Matrix(brightness=brightness)
+	gradients.infinite_random_gradient(m)
+
+def off(brightness=65):
+	while True:
+		time.sleep(100)
+
+MODE_FUNCS = [nasa_apods, gradient, off]
 
 MODE_GRADIENT = 0
 MODE_APOD = 1
@@ -19,21 +35,51 @@ MODE_SPOTIFY = 2
 MODE_CLOCK = 3
 
 mode = 0
+brightness = 60
 
+# Start initial mode
 print(f"Starting mode {MODE_FUNCS[mode].__name__}")
-matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=())
+matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 matrix_thread.start()
-# https://stackoverflow.com/questions/32922909/how-to-stop-an-infinite-loop-safely-in-python
+
 def iter_mode():
-	global mode, matrix_thread
+	global mode, brightness, matrix_thread
+
+	# Increment mode
 	mode = (mode+1) % len(MODE_FUNCS)
-	print(f"Button pressed, starting mode {MODE_FUNCS[mode].__name__}")
+
+	# Kill previous mode function
 	matrix_thread.kill()
-	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=())
+
+	# Start new mode function
+	print(f"Starting mode {MODE_FUNCS[mode].__name__}")
+	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 	matrix_thread.start()
 
 mode_btn = Button(pin=19)
 mode_btn.when_pressed = iter_mode
+
+def change_brightness(btn: Button):
+	global mode, brightness, matrix_thread
+
+	if btn == bright_up_btn:
+		brightness = min(brightness + 5, 100)
+	elif btn == bright_down_btn:
+		brightness = max(brightness - 5, 0)
+
+	# Restart mode with new brightness
+	matrix_thread.kill()
+
+	print(f"Setting brightness to {brightness}%")
+	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
+	matrix_thread.start()
+
+
+bright_up_btn = Button()
+bright_up_btn.when_pressed = iter_mode
+
+bright_down_btn = Button()
+bright_down_btn.when_pressed = iter_mode
 
 try:
 	print("Press CTRL-C to stop.")
@@ -42,3 +88,4 @@ try:
 except KeyboardInterrupt:
 	matrix_thread.kill()
 	sys.exit(0)
+

@@ -7,10 +7,6 @@ import sys
 import numpy as np
 from typing import List
 
-def run(): 
-    m = Matrix()
-    infinite_random_gradient(m)
-
 def linear_gradient(start_color: tuple[int, int, int], end_color: tuple[int, int, int], stops: int = 64) -> List[tuple[int,int,int]]:
     ''' returns a gradient list of (n) colors between
                     two hex colors. start_hex and finish_hex
