@@ -2,7 +2,7 @@ import requests
 import datetime
 from pprint import PrettyPrinter
 from matrix import Matrix
-from PIL import Image
+from PIL import Image, ImageOps
 
 nasa_api_key = 'IdK13tM9IR9PhWbCLfgi9esC7Gig5R2ItfDbOH2C'
 
@@ -11,6 +11,11 @@ pp = PrettyPrinter()
 '''
 APOD API
 '''
+
+def run():
+    m = Matrix()
+    m.set_image_processing([m.fill, ImageOps.autocontrast])
+    random_apods(m, count=30)
 
 def fetch_apod(date='2020-01-22'):
     URL_APOD = "https://api.nasa.gov/planetary/apod"
@@ -25,7 +30,6 @@ def fetch_apod(date='2020-01-22'):
     pp.pprint(response)
 
     return response
-
 
 def fetch_random_apod(count=1):
     URL_APOD = "https://api.nasa.gov/planetary/apod"
@@ -42,7 +46,7 @@ def fetch_random_apod(count=1):
     return response
 
 
-def loop_apods(m: Matrix = Matrix()):
+def loop_apods(m: Matrix):
     start_date = datetime.date(2022, 1, 1)
     today = datetime.date.today()
     daydelta = datetime.timedelta(days=1)
@@ -59,10 +63,7 @@ def loop_apods(m: Matrix = Matrix()):
 
     m.loop_images(image_urls)
 
-
-def random_apods(m: Matrix = Matrix(), count: int = 30):
-    loading = Image.open('../images/loading.gif')
-    m.show(loading)
+def random_apods(m: Matrix, count: int = 30):
     responses = fetch_random_apod(count=count)
 
     image_urls = []
@@ -83,9 +84,3 @@ def random_apods(m: Matrix = Matrix(), count: int = 30):
 #     URL_JWST_JPG = 'https://api.jwstapi.com/all/type/jpg'
 #     response = requests.get(URL_JWST_JPG, headers={'X-API-KEY': KEY_JWST})
 #     return response
-
-
-# m = Matrix()
-# m.set_image_processing([m.fill, ImageOps.autocontrast])
-
-# random_apods(m, count=30)

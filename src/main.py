@@ -11,7 +11,7 @@ from gpiozero import Button
 from signal import pause
 import multiprocessing as mp
 
-MODE_FUNCS = [gradients.infinite_random_gradient, nasa.random_apods]
+MODE_FUNCS = [gradients.run, nasa.run]
 
 MODE_GRADIENT = 0
 MODE_APOD = 1
@@ -20,23 +20,19 @@ MODE_CLOCK = 3
 
 mode = 0
 
-m = Matrix()
-
 print(f"Starting mode {MODE_FUNCS[mode].__name__}")
-matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(m,), daemon=True)
+matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=())
 matrix_thread.start()
 # https://stackoverflow.com/questions/32922909/how-to-stop-an-infinite-loop-safely-in-python
 def iter_mode():
 	global mode, matrix_thread
-	m = Matrix()
-	m.matrix.Clear()
 	mode = (mode+1) % len(MODE_FUNCS)
 	print(f"Button pressed, starting mode {MODE_FUNCS[mode].__name__}")
 	matrix_thread.kill()
-	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(m,), daemon=True)
+	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=())
 	matrix_thread.start()
 
-mode_btn = Button(19)
+mode_btn = Button(pin=19)
 mode_btn.when_pressed = iter_mode
 
 try:

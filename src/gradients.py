@@ -7,32 +7,9 @@ import sys
 import numpy as np
 from typing import List
 
-class Gradient:
-    def __init__(self, rows, cols) -> None:
-        self.rows = rows
-        self.cols = cols
-        self.gradient_root = [0, 0]
-  #   sns.color_palette("magma", as_cmap=True)
-        pass
-
-    def gradient_looping(self):
-        # end
-        print('hi')
-
-
-# def hex_to_RGB(hex):
-#     ''' "#FFFFFF" -> [255,255,255] '''
-#     # Pass 16 to the integer function for change of base
-#     return [int(hex[i:i+2], 16) for i in range(1, 6, 2)]
-
-
-# def RGB_to_hex(RGB):
-#     ''' [255,255,255] -> "#FFFFFF" '''
-#     # Components need to be integers for hex to make sense
-#     RGB = [int(x) for x in RGB]
-#     return "#"+"".join(["0{0:x}".format(v) if v < 16 else
-#                         "{0:x}".format(v) for v in RGB])
-
+def run(): 
+    m = Matrix()
+    infinite_random_gradient(m)
 
 def linear_gradient(start_color: tuple[int, int, int], end_color: tuple[int, int, int], stops: int = 64) -> List[tuple[int,int,int]]:
     ''' returns a gradient list of (n) colors between
@@ -70,8 +47,7 @@ def polylinear_gradient(colors: List[tuple[int, int, int]], stops: int = 64):
 
     return gradient_dict
 
-
-def scrolling_linear_gradient(m: Matrix = Matrix()):
+def scrolling_linear_gradient(m: Matrix):
     half_gradient = linear_gradient((255, 100, 255), (50, 50, 250), stops=32)
     reverse_gradient = half_gradient.copy()
     reverse_gradient.reverse()
@@ -86,7 +62,7 @@ def scrolling_linear_gradient(m: Matrix = Matrix()):
         m.matrix.SetImage(grim)
         time.sleep(.05)
 
-def infinite_random_gradient(m: Matrix = Matrix()):
+def infinite_random_gradient(m: Matrix):
     '''
         Gradient scrolling
 
@@ -117,7 +93,7 @@ def infinite_random_gradient(m: Matrix = Matrix()):
         gradient2 = gradient1
         gradient1 = [list(c) for c in linear_gradient(color1, color2)]
 
-def infinite_random_size_gradient(m: Matrix = Matrix()):
+def infinite_random_size_gradient(m: Matrix):
     def rand_gradient_length():
         return random.randrange(10, 200)
     '''
@@ -163,7 +139,7 @@ def infinite_random_size_gradient(m: Matrix = Matrix()):
 
 from gpiozero import MCP3008
 
-def gradient_speed_control(m: Matrix = Matrix()):
+def gradient_speed_control(m: Matrix):
     '''
         Gradient scrolling
 
@@ -199,17 +175,4 @@ def gradient_speed_control(m: Matrix = Matrix()):
 def random_color():
     return (random.randrange(255), random.randrange(255), random.randrange(255))
 
-# brightness = 50
-# if len(sys.argv) > 1:
-#     brightness = int(sys.argv[1])
 
-# m = Matrix(brightness=brightness)
-
-# # infinite_random_size_gradient(m)
-# infinite_random_gradient(m)
-
-
-# pot = MCP3008(1)
-# while True:
-#     print(pot.value)
-#     time.sleep(.1)
