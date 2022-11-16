@@ -58,7 +58,7 @@ def loop_apods(m: Matrix):
 
     m.loop_image_urls(image_urls)
 
-def random_apods(m: Matrix, count: int = 30):
+def random_apods(m: Matrix, count: int = 30, delay: int=10):
     responses = fetch_random_apod(count=count)
 
     image_urls = []
@@ -69,12 +69,4 @@ def random_apods(m: Matrix, count: int = 30):
             image_urls.append(r['url'])
             image_descriptions.append(r['date'])
 
-    m.loop_image_urls(image_urls)
-
-# KEY_JWST = ''
-
-
-# def get_jwst_images():
-#     URL_JWST_JPG = 'https://api.jwstapi.com/all/type/jpg'
-#     response = requests.get(URL_JWST_JPG, headers={'X-API-KEY': KEY_JWST})
-#     return response
+    m.loop_image_urls(image_urls, delay=delay)

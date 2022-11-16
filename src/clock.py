@@ -1,19 +1,28 @@
 import math
 from PIL import Image, ImageDraw, ImageFont
-import PIL
+import os
 import time
 from datetime import datetime
+import pathlib
 
 from matrix import Matrix
+
+cwd = pathlib.Path(__file__).parent.resolve()
+
+def font_path(filename: str):
+	return os.path.join(cwd.parent, "fonts", filename)
 
 def digital_clock(m: Matrix):
 	# Create default image without time
 	clock_background = Image.new(mode='RGB', size=(64, 64))
 	draw_background = ImageDraw.Draw(clock_background, mode='RGB')
 	
-	fnt = ImageFont.load("../fonts/texgyre-27.pil")
-	# fnt = ImageFont.load("../fonts/tom-thumb.pil")
-	# fnt = ImageFont.load("../fonts/helvR12.pil")
+	fnt = ImageFont.load(font_path("texgyre-27.pil"))
+	# fnt = ImageFont.truetype(font_path("back-to-1982.regular.ttf", size=30)
+	# fnt = ImageFont.truetype(font_path("square-pixel7.regular.ttf", size=30)
+	# fnt = ImageFont.truetype(font_path("digitalix.ttf", size=16)
+	# fnt = ImageFont.load(font_path("tom-thumb.pil")
+	# fnt = ImageFont.load(font_path("helvR12.pil")
 	
 	while True:
 		current_datetime = datetime.now()
@@ -26,6 +35,7 @@ def digital_clock(m: Matrix):
 
 		clock = clock_background.copy()
 		draw = ImageDraw.Draw(clock, mode='RGB')
+		draw.fontmode = "1"
 
 		size = fnt.getbbox(time_text)
 

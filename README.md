@@ -4,9 +4,30 @@ Application to power wall art run on a Raspberry Pi
 
 Experimenting currently
 
+## Deploying
+
+```bash
+# Ensure dependencies are installed for sudo
+pip freeze > requirements.txt
+sudo pip install -r requirements.txt
+
+# Copy repo to /usr/local/bin
+sudo rm -rf /usr/local/bin/pi-wall-art
+sudo cp -R . /usr/local/bin/pi-wall-art
+
+# Copy service start/stop script
+sudo cp rgbmatrix.sh /etc/init.d
+
+# Add rgbmatrix.sh to startup
+sudo update-rc.d rgbmatrix.sh defaults
+
+# To manually start the controller
+sudo /etc/init.d/rgbmatrix.sh start
+```
+
 ## Available Pinouts
 
-Available on Adafruit Bonnet:
+Available on Adafruit Hat/Bonnet:
 
 - 3: SCL
 - 2: SDA

@@ -1,6 +1,6 @@
 import time
 import sys
-import itertools
+import os
 from PIL import Image, ImageOps
 
 # import spotify
@@ -11,6 +11,9 @@ import gradients
 from gpiozero import Button
 from signal import pause
 import multiprocessing as mp
+import pathlib
+
+cwd = pathlib.Path(__file__).parent.resolve()
 
 def safe_brightness(brightness):
 	return max(min(brightness, 100), 1)
@@ -21,7 +24,7 @@ def digital_clock(brightness):
 
 def nasa_apods(brightness):
 	m = Matrix(brightness=safe_brightness(brightness))
-	im = Image.open('../images/nasa.png')
+	im = Image.open(os.path.join(cwd, '../images/nasa.png'))
 	m.show(im)
 	m.set_image_processing([m.fill, ImageOps.autocontrast])
 	nasa.random_apods(m, count=30)
@@ -31,8 +34,7 @@ def gradient(brightness):
 	gradients.infinite_random_gradient(m)
 
 def off(brightness):
-	while True:
-		time.sleep(100)
+	pause()
 
 MODE_FUNCS = [digital_clock, nasa_apods, gradient, off]
 
@@ -52,7 +54,7 @@ def iter_mode():
 
 	# Kill previous mode function
 	matrix_thread.kill()
-	time.sleep(1)
+	time.sleep(.5)
 	
 	# Start new mode function
 	print(f"Starting mode {MODE_FUNCS[mode].__name__}")
@@ -69,11 +71,11 @@ def change_brightness(btn: Button):
 		brightness = min(brightness + 5, 100)
 	elif btn == bright_down_btn:
 		brightness = max(brightness - 5, 0)
-
+	
 	# Restart mode with new brightness
 	matrix_thread.kill()
-	time.sleep(1)
-	
+	time.sleep(.5)
+
 	print(f"Setting brightness to {brightness}%")
 	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 	matrix_thread.start()
@@ -84,11 +86,12 @@ bright_up_btn.when_pressed = change_brightness
 bright_down_btn = Button(pin=15)
 bright_down_btn.when_pressed = change_brightness
 
-try:
-	print("Press CTRL-C to stop.")
-	while True:
-		time.sleep(100)
-except KeyboardInterrupt:
-	matrix_thread.kill()
-	sys.exit(0)
+pause()
 
+# try:
+# 	print("Press CTRL-C to stop.")
+# 	while True:
+# 		time.sleep(100)
+# except KeyboardInterrupt:
+# 	matrix_thread.kill()
+# 	sys.exit(0)
