@@ -18,6 +18,8 @@ def digital_clock(m: Matrix):
 	while True:
 		current_datetime = datetime.now()
 		hour = current_datetime.hour % 12
+		if hour == 0:
+			hour = 12
 		minute = current_datetime.minute
 
 		time_text = f"{hour}:{minute:02d}"
@@ -27,7 +29,7 @@ def digital_clock(m: Matrix):
 
 		size = fnt.getbbox(time_text)
 
-		x = (63-size[2]) / 2
+		x = ((63-size[2]) / 2) - 1
 		y = (63-size[3]) / 2
 
 		draw.text(xy=(x,y), text=time_text, font=fnt, fill=(255, 255, 255))

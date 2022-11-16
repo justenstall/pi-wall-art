@@ -52,7 +52,8 @@ def iter_mode():
 
 	# Kill previous mode function
 	matrix_thread.kill()
-
+	time.sleep(1)
+	
 	# Start new mode function
 	print(f"Starting mode {MODE_FUNCS[mode].__name__}")
 	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
@@ -71,7 +72,8 @@ def change_brightness(btn: Button):
 
 	# Restart mode with new brightness
 	matrix_thread.kill()
-
+	time.sleep(1)
+	
 	print(f"Setting brightness to {brightness}%")
 	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 	matrix_thread.start()

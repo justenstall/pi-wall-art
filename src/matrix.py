@@ -9,7 +9,7 @@ import imagehash
 from xdg import xdg_cache_home
 
 class Matrix:
-    def __init__(self, brightness: int=100, limit_refresh_rate_hz: int=-1, show_refresh_rate: bool=False, font: str='/home/pi/pi-wall-art/fonts/4x6.bdf') -> None:
+    def __init__(self, brightness: int=100, limit_refresh_rate_hz: int=-1, show_refresh_rate: bool=False) -> None:
         # Initialize RGB Matrix object
         self.options = RGBMatrixOptions()
         self.options.rows = 64
@@ -29,7 +29,8 @@ class Matrix:
         self.matrix = RGBMatrix(options=self.options)
 
         # Caching features initialization
-        self.image_cache = ImageCache()
+        # self.image_cache = FileCache()
+        self.image_cache = MemoryCache()
 
         self.processing_funcs: list[Callable[[Image.Image], Image.Image]] = [self.fill]
 
@@ -76,12 +77,13 @@ class Matrix:
         self.image = im
     
     def show_url(self, image_url: str):
-        if self.image_cache.exists(image_url):
-            im = self.image_cache.retrieve(image_url)
+        key = key_from_url(image_url)
+        if self.image_cache.exists(key):
+            im = self.image_cache.retrieve(key)
         else:
             im = self.get_image_from_url(image_url)
             im = self.process_image(im)
-            self.image_cache.store(image_url, im)
+            self.image_cache.store(key, im)
 
         self.matrix.Clear()
         self.matrix.SetImage(im)
@@ -117,21 +119,41 @@ class Matrix:
             time.sleep(0.05)
             offscreen_canvas = self.matrix.SwapOnVSync(offscreen_canvas)
 
+def key_from_url(url):
+    filename = os.path.basename(urlparse(url).path)
+    return os.path.splitext(filename)[0]
+
 # TODO: cache images with the processing, so the processing only happens the first time the image is displayed, then delete the temp folder of images after execution
 
-class ImageCache:
+class FileCache:
     def __init__(self, path: str=os.path.join(xdg_cache_home(), 'pi-wall-art', 'images'), prefix: str = "") -> None:
         self.path = path
         self.prefix = prefix
+        os.makedirs(path, exist_ok=True)
 
     def _key_to_fp(self, key):
         return os.path.join(self.path, f"{self.prefix}{key}.jpg")
     
     def store(self, key, image: Image.Image):
-        image.save(self._key_to_fp(key))
+        filename = self._key_to_fp(key)
+        open(filename, 'w')
+        image.save(filename)
     
     def retrieve(self, key):
         return Image.open(self._key_to_fp(key))
     
     def exists(self, key):
         return os.path.exists(self._key_to_fp(key))
+
+class MemoryCache:
+    def __init__(self) -> None:
+        self.cache = {}
+
+    def store(self, key, im: Image.Image):
+        self.cache[key] = im
+    
+    def retrieve(self, key):
+        return self.cache[key]
+    
+    def exists(self, key):
+        return key in self.cache
