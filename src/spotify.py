@@ -36,14 +36,14 @@ def print_lz_top_songs(m: Matrix):
     if results:
         for track in results['tracks'][:10]:
             image_url = track['album']['images'][0]['url']
-            m.display_image_from_url(image_url)
+            # m.display_image_from_url(image_url)
             time.sleep(2)
 
 def print_my_playlists(m: Matrix):
     response = spotify.user_playlists(my_username)
     if response:
         image_urls = [playlist['images'][0]['url'] for playlist in response['items']]
-        m.loop_images(image_urls)
+        m.loop_image_urls(image_urls)
 
 def print_current_track(m: RGBMatrix):
     current = spotify.current_user_playing_track()
@@ -69,7 +69,7 @@ current = spotify_user.current_user_playing_track()
 if current == None:
     sys.exit(1)
 image_url = current['album']['images'][0]['url']
-m.display_image_from_url(image_url)
+# m.display_image_from_url(image_url)
 # for idx, item in enumerate(results['items']):
 #     track = item['track']
 #     print(idx, track['artists'][0]['name'], " – ", track['name'])

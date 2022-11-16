@@ -36,7 +36,7 @@ def fetch_random_apod(count=1):
     }
 
     response = requests.get(URL_APOD, params=params).json()
-    pp.pprint(response)
+    # pp.pprint(response)
 
     return response
 
@@ -56,7 +56,7 @@ def loop_apods(m: Matrix):
             image_urls.append(response['url'])
         start_date += daydelta
 
-    m.loop_images(image_urls)
+    m.loop_image_urls(image_urls)
 
 def random_apods(m: Matrix, count: int = 30):
     responses = fetch_random_apod(count=count)
@@ -67,10 +67,9 @@ def random_apods(m: Matrix, count: int = 30):
     for r in responses:
         if r['media_type'] == 'image':
             image_urls.append(r['url'])
-            # image_descriptions.append(f"{r['date']}: {r['title']}")
             image_descriptions.append(r['date'])
 
-    m.loop_images(image_urls, image_descriptions=image_descriptions)
+    m.loop_image_urls(image_urls)
 
 # KEY_JWST = ''
 

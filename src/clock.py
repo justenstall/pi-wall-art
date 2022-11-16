@@ -1,29 +1,40 @@
-from audioop import reverse
-import itertools
 import math
-import random
-from PIL import Image, ImageDraw
-from matrix import Matrix
+from PIL import Image, ImageDraw, ImageFont
+import PIL
 import time
 from datetime import datetime
-import sys
-import numpy as np
-from typing import List
+
+from matrix import Matrix
 
 def digital_clock(m: Matrix):
+	# Create default image without time
+	clock_background = Image.new(mode='RGB', size=(64, 64))
+	draw_background = ImageDraw.Draw(clock_background, mode='RGB')
+	
+	fnt = ImageFont.load("../fonts/texgyre-27.pil")
+	# fnt = ImageFont.load("../fonts/tom-thumb.pil")
+	# fnt = ImageFont.load("../fonts/helvR12.pil")
+	
 	while True:
-		current_time = time.clock_gettime(time.CLOCK_REALTIME)
 		current_datetime = datetime.now()
 		hour = current_datetime.hour % 12
 		minute = current_datetime.minute
 
-		hour_angle = (hour / 12) * 360
-		minute_angle = (minute / 60) * 360
+		time_text = f"{hour}:{minute:02d}"
 
-		clock = Image.new(mode='RGB', size=(64, 64))
+		clock = clock_background.copy()
+		draw = ImageDraw.Draw(clock, mode='RGB')
 
-		print(f"{hour}:{minute}")
-		time.sleep(1)
+		size = fnt.getbbox(time_text)
+
+		x = (63-size[2]) / 2
+		y = (63-size[3]) / 2
+
+		draw.text(xy=(x,y), text=time_text, font=fnt, fill=(255, 255, 255))
+		
+		m.show(clock)
+		
+		time.sleep(5)
 
 def analog_clock(m: Matrix):
 	hour_hand_length = 10
@@ -59,7 +70,3 @@ def analog_clock(m: Matrix):
 
 		print(f"{hour}:{minute}")
 		time.sleep(5)
-
-# m = Matrix()
-
-# analog_clock(m)
