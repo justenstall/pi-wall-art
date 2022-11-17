@@ -20,7 +20,7 @@ def safe_brightness(brightness):
 
 def digital_clock(brightness):
 	m = Matrix(brightness=safe_brightness(brightness))
-	clock.digital_clock(m)
+	clock.square_clock(m)
 
 def nasa_apods(brightness):
 	m = Matrix(brightness=safe_brightness(brightness))

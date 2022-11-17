@@ -1,11 +1,1 @@
---led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat-pwm --led-slowdown-gpio=4 --led-brightness=70 --led-show-refresh --led-pwm-dither-bits=1
-
-sudo led-image-viewer ~/pi-wall-art/images/me.jpeg --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat-pwm --led-slowdown-gpio=4 --led-brightness=70 --led-show-refresh --led-pwm-dither-bits=1 
-
-sudo led-image-viewer ~/pi-wall-art/images/pink_gradient.gif --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat-pwm --led-slowdown-gpio=4 --led-show-refresh  --led-pwm-dither-bits=1 --led-limit-refresh=150
-
-sudo led-image-viewer ~/pi-wall-art/images/halo-title.gif --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat-pwm --led-slowdown-gpio=4 --led-pwm-dither-bits=1 --led-limit-refresh=150
-
-sudo text-scroller -f ~/rpi-rgb-led-matrix/fonts/10x20.bdf -s 2 -C 0,255,255 HELLO --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat-pwm --led-slowdown-gpio=4 --led-show-refresh --led-pwm-dither-bits=1
-
-sudo ~/rpi-rgb-led-matrix/examples-api-use/demo -D0 --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat-pwm --led-slowdown-gpio=4 --led-show-refresh --led-pwm-dither-bits=1
+sudo led-image-viewer --led-rows=64 --led-cols=64 --led-gpio-mapping=adafruit-hat-pwm --led-slowdown-gpio=4 --led-brightness=70 --led-show-refresh --led-pwm-dither-bits=1 <image>

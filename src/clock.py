@@ -18,6 +18,7 @@ def digital_clock(m: Matrix):
 	draw_background = ImageDraw.Draw(clock_background, mode='RGB')
 	
 	fnt = ImageFont.load(font_path("texgyre-27.pil"))
+	# fnt = ImageFont.truetype(font_path("myfont.ttf"), size=18)
 	# fnt = ImageFont.truetype(font_path("back-to-1982.regular.ttf", size=30)
 	# fnt = ImageFont.truetype(font_path("square-pixel7.regular.ttf", size=30)
 	# fnt = ImageFont.truetype(font_path("digitalix.ttf", size=16)
@@ -37,12 +38,43 @@ def digital_clock(m: Matrix):
 		draw = ImageDraw.Draw(clock, mode='RGB')
 		draw.fontmode = "1"
 
-		size = fnt.getbbox(time_text)
+		_, _, w, h = draw.textbbox((0, 0), time_text, font=fnt)
 
-		x = ((63-size[2]) / 2) - 1
-		y = (63-size[3]) / 2
+		x = ((63-w) / 2) - 1
+		y = (63-h) / 2
 
 		draw.text(xy=(x,y), text=time_text, font=fnt, fill=(255, 255, 255))
+		
+		m.show(clock)
+		
+		time.sleep(5)
+
+def square_clock(m: Matrix):
+	# Create default image without time
+	clock_background = Image.new(mode='RGB', size=(64, 64))
+	draw_background = ImageDraw.Draw(clock_background, mode='RGB')
+	
+	fnt = ImageFont.truetype(font_path("myfont.ttf"), size=40)
+	
+	while True:
+		current_datetime = datetime.now()
+		hour = current_datetime.hour % 12
+		if hour == 0:
+			hour = 12
+		minute = current_datetime.minute
+
+		time_text = f"{hour:2d}\n{minute:02d}"
+
+		clock = clock_background.copy()
+		draw = ImageDraw.Draw(clock, mode='RGB')
+		draw.fontmode = "1"
+
+		# _, _, w, h = draw.textbbox((0, 0), time_text, font=fnt)
+
+		# x = ((64-w) / 2)
+		# y = (64-h) / 2
+
+		draw.multiline_text(xy=(0,0), spacing=4, text=time_text, font=fnt, fill=(255, 255, 255))
 		
 		m.show(clock)
 		

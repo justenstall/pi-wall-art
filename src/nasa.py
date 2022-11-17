@@ -3,8 +3,7 @@ import datetime
 from pprint import PrettyPrinter
 from matrix import Matrix
 from PIL import Image, ImageOps
-
-nasa_api_key = 'IdK13tM9IR9PhWbCLfgi9esC7Gig5R2ItfDbOH2C'
+from mysecrets import nasa as secrets
 
 pp = PrettyPrinter()
 
@@ -16,7 +15,7 @@ def fetch_apod(date='2020-01-22'):
     URL_APOD = "https://api.nasa.gov/planetary/apod"
 
     params = {
-        'api_key': nasa_api_key,
+        'api_key': secrets['api_key'],
         'date': date,
         'hd': 'True'
     }
@@ -30,7 +29,7 @@ def fetch_random_apod(count=1):
     URL_APOD = "https://api.nasa.gov/planetary/apod"
 
     params = {
-        'api_key': nasa_api_key,
+        'api_key': secrets['api_key'],
         'count': count,
         'hd': 'True'
     }
