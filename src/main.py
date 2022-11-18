@@ -12,6 +12,7 @@ from gpiozero import Button
 from signal import pause
 import multiprocessing as mp
 import pathlib
+import snow
 
 cwd = pathlib.Path(__file__).parent.resolve()
 
@@ -21,6 +22,10 @@ def safe_brightness(brightness):
 def digital_clock(brightness):
 	m = Matrix(brightness=safe_brightness(brightness))
 	clock.square_clock(m)
+
+def snow_animation(brightness):
+	m = Matrix(brightness=safe_brightness(brightness))
+	snow.snow(m)
 
 def nasa_apods(brightness):
 	m = Matrix(brightness=safe_brightness(brightness))
@@ -36,7 +41,7 @@ def gradient(brightness):
 def off(brightness):
 	pause()
 
-MODE_FUNCS = [digital_clock, nasa_apods, gradient, off]
+MODE_FUNCS = [digital_clock, snow_animation, nasa_apods, gradient, off]
 
 mode = 0
 brightness = 60
