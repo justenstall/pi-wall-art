@@ -66,7 +66,7 @@ def iter_mode():
 	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 	matrix_thread.start()
 
-mode_btn = Button(pin=19)
+mode_btn = Button(pin=25)
 mode_btn.when_pressed = iter_mode
 
 def change_brightness(btn: Button):
@@ -85,10 +85,10 @@ def change_brightness(btn: Button):
 	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 	matrix_thread.start()
 
-bright_up_btn = Button(pin=14)
+bright_up_btn = Button(pin=8)
 bright_up_btn.when_pressed = change_brightness
 
-bright_down_btn = Button(pin=15)
+bright_down_btn = Button(pin=7)
 bright_down_btn.when_pressed = change_brightness
 
 pause()
