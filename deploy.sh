@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo rm -rf /usr/local/bin/pi-wall-art
 sudo cp -R . /usr/local/bin/pi-wall-art
 
