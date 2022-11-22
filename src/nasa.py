@@ -1,10 +1,10 @@
 import requests
 import datetime
-from pprint import PrettyPrinter
 from matrix import Matrix
 from PIL import Image, ImageOps
 from mysecrets import nasa as secrets
 
+from pprint import PrettyPrinter
 pp = PrettyPrinter()
 
 '''
