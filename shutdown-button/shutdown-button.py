@@ -7,7 +7,7 @@ from signal import pause
 def shutdown():
     check_call(['sudo', 'shutdown', '-h', 'now'])
 
-shutdown_btn = Button(18, hold_time=1)
+shutdown_btn = Button(11, hold_time=1)
 shutdown_btn.when_held = shutdown
 
 pause()
