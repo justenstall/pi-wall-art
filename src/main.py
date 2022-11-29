@@ -14,6 +14,12 @@ import multiprocessing as mp
 import pathlib
 import snow
 
+mode_switch_btn = Button(pin=8) # green wire
+mode_up_btn = Button(pin=11) # blue wire 1
+mode_down_btn = Button(pin=9) # blue wire 2
+bright_up_btn = Button(pin=10) # yellow wire 1
+bright_down_btn = Button(pin=25) # yellow wire 2
+
 cwd = pathlib.Path(__file__).parent.resolve()
 
 def safe_brightness(brightness):
@@ -65,9 +71,7 @@ def iter_mode():
 	print(f"Starting mode {MODE_FUNCS[mode].__name__}")
 	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 	matrix_thread.start()
-
-mode_btn = Button(pin=25)
-mode_btn.when_pressed = iter_mode
+mode_switch_btn.when_pressed = iter_mode
 
 def change_brightness(btn: Button):
 	global mode, brightness, matrix_thread
@@ -84,11 +88,7 @@ def change_brightness(btn: Button):
 	print(f"Setting brightness to {brightness}%")
 	matrix_thread = mp.Process(target=MODE_FUNCS[mode], args=(brightness,))
 	matrix_thread.start()
-
-bright_up_btn = Button(pin=8)
 bright_up_btn.when_pressed = change_brightness
-
-bright_down_btn = Button(pin=7)
 bright_down_btn.when_pressed = change_brightness
 
 pause()
