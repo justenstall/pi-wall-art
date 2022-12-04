@@ -1,0 +1,5 @@
+teams = {
+	'CLE': {
+		'logo': '../nfl'
+	}
+}

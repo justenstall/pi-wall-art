@@ -20,7 +20,7 @@ def live_scores():
 def is_team(game, team_name: str):
 	return game['hometeam'] == team_name or game['awayteam'] == team_name
 
-def scoreboard(game):
+# def scoreboard(game):
 	
 
 live_scores()
