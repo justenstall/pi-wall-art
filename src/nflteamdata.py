@@ -1,5 +1,70 @@
 teams = {
 	'CLE': {
-		'logo': '../nfl'
-	}
+		'location': 'Cleveland',
+		'mascot': 'Browns',
+		'logo': '../images-nfl/browns.webp',
+		'primary': (255, 60, 0),
+		'secondary': (49, 29, 0),
+	},
+	'SEA': {
+		'location': 'Seattle',
+		'mascot': 'Seahawks',
+		'logo': '../images-nfl/seahawks.webp',
+		'primary': (0, 0, 0),
+		'secondary': (100, 100, 100),
+	},
+	'LAR': {
+		'location': 'Los Angeles',
+		'mascot': 'Rams',
+		'logo': '../images-nfl/rams.webp',
+		'primary': (0, 0, 0),
+		'secondary': (100, 100, 100),
+	},
+	'MIA': {
+		'location': 'Miami',
+		'mascot': 'Dolphins',
+		'logo': '../images-nfl/dolphins.webp',
+		'primary': (0, 0, 0),
+		'secondary': (100, 100, 100),
+	},
+	'SF': {
+		'location': 'San Francisco',
+		'mascot': '49ers',
+		'logo': '../images-nfl/49ers.webp',
+		'primary': (0, 0, 0),
+		'secondary': (100, 100, 100),
+	},
+	'KC': {
+		'location': 'Kansas City',
+		'mascot': 'Chiefs',
+		'logo': '../images-nfl/chiefs.webp',
+		'primary': (0, 0, 0),
+		'secondary': (100, 100, 100),
+	},
+	'CIN': {
+		'location': 'Cincinnati',
+		'mascot': 'Bengals',
+		'logo': '../images-nfl/chiefs.webp',
+		'primary': (0, 0, 0),
+		'secondary': (100, 100, 100),
+	},
+	
 }
+
+'''
+  'name': 'SEA @ LAR',
+  'name': 'MIA @ SF',
+  'name': 'KC @ CIN',
+  'name': 'LAC @ LV',
+  'name': 'PIT @ ATL',
+  'name': 'GB @ CHI',
+  'name': 'JAX @ DET',
+  'name': 'NYJ @ MIN',
+  'name': 'WSH @ NYG',
+  'name': 'TEN @ PHI',
+  'name': 'DEN @ BAL',
+  'name': 'CLE @ HOU',
+  'name': 'IND @ DAL',
+  'name': 'BUF @ NE',
+  'name': 'NO @ TB',
+'''
