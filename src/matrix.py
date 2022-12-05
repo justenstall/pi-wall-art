@@ -34,7 +34,8 @@ class Matrix:
 
         self.processing_funcs: list[Callable[[Image.Image], Image.Image]] = [self.fill]
 
-        self.resampling = Image.Resampling.LANCZOS
+        # self.resampling = Image.Resampling.LANCZOS
+        self.resampling = Image.Resampling.HAMMING
 
         self.image = Image.new('RGB', (64, 64))
     
