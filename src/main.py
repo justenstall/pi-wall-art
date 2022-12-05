@@ -13,6 +13,7 @@ from signal import pause
 import multiprocessing as mp
 import pathlib
 import snow
+import nfl
 
 # Pins: 25, 10, 9, 11, 8
 mode_switch_btn = Button(pin=25) # green wire
@@ -45,10 +46,18 @@ def gradient(brightness):
 	m = Matrix(brightness=safe_brightness(brightness))
 	gradients.infinite_random_gradient(m)
 
+def nfl_scores(brightness):
+	m = Matrix(brightness=safe_brightness(brightness))
+	nfl.live_scores(m)
+
+def browns_score(brightness):
+	m = Matrix(brightness=safe_brightness(brightness))
+	nfl.team_score(m, team='CLE')
+
 def off(brightness):
 	pause()
 
-MODE_FUNCS = [digital_clock, snow_animation, nasa_apods, gradient, off]
+MODE_FUNCS = [digital_clock, snow_animation, nasa_apods, browns_score, nfl_scores, gradient, off]
 
 mode = 0
 brightness = 60
@@ -93,11 +102,3 @@ bright_up_btn.when_pressed = change_brightness
 bright_down_btn.when_pressed = change_brightness
 
 pause()
-
-# try:
-# 	print("Press CTRL-C to stop.")
-# 	while True:
-# 		time.sleep(100)
-# except KeyboardInterrupt:
-# 	matrix_thread.kill()
-# 	sys.exit(0)

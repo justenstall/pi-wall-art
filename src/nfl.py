@@ -22,19 +22,31 @@ def live_scores(m: Matrix):
          continue
       pp.pprint(games)
       for game in games:
-         if is_team(game, "CLE"):
-            pp.pprint(game)
+         pp.pprint(game)
+         sb = scoreboard(game)
+         m.matrix.Clear()
+         m.matrix.SetImage(sb)
+         time.sleep(10)
+      time.sleep(10)
+
+def team_score(m: Matrix, team: str):
+   while True:
+      games = nfl.get_all_games()
+      if games is None:
+         print("Could not get games")
+         continue
+      for game in games:
+         if is_team(game, team):
             sb = scoreboard(game)
             m.matrix.Clear()
             m.matrix.SetImage(sb)
-      time.sleep(30)
+      time.sleep(20)
 
 def is_team(game, team_name: str):
    return game['hometeam'] == team_name or game['awayteam'] == team_name
 
 def get_team_logo(team_code):
    im_path = os.path.join(cwd, teams[team_code]['logo'])
-   print(im_path)
    im = Image.open(fp=im_path)
    im.thumbnail((24, 24), Image.Resampling.HAMMING)
    return im
@@ -48,28 +60,37 @@ def scoreboard(game):
    sb.paste(away_logo, box=(4,8))
    sb.paste(home_logo, box=(36,8))
 
+   # Initialize drawing interface
    draw_sb = ImageDraw.Draw(sb, mode='RGB')
-   # score_font = ImageFont.load(font_path("9x18.pil"))
-   # score_font = ImageFont.truetype(font_path("digitalix.ttf"), size=10)
-   # score_font = ImageFont.truetype(font_path("UpheavalPro.ttf"), size=18)
-   score_font = ImageFont.truetype(font_path("square-pixel7.regular.ttf"), size=24)
-   # score_font = ImageFont.truetype(font_path("bm_receipt.ttf"), size=16)
-   # draw_sb.fontmode = "1"
+
+   small_font = ImageFont.load(font_path("tom-thumb.pil"))
+   score_font = ImageFont.truetype(font_path("KdamThmorPro-Regular.ttf"), size=22)
+   draw_sb.fontmode = "1"
+
    # Draw scores
-   draw_sb.text(xy=(4,32), text=str(game['awayscore']), font=score_font)
-   draw_sb.text(xy=(36,32), text=str(game['homescore']), font=score_font)
+   draw_sb.text(xy=(4,28), text=str(game['awayscore']), font=score_font)
+   draw_sb.text(xy=(36,28), text=str(game['homescore']), font=score_font)
+
+   # Draw @ symbol
+   draw_sb.text(xy=(30, 20), text='@', font=small_font)
+   
+   # Draw possession dot
+   if game['possession'] == 'away':
+      draw_sb.ellipse(xy=[(12, 46), (14, 48)], width=2)
+   elif game['possession'] == 'home':
+      draw_sb.ellipse(xy=[(44, 46), (46, 48)], width=2)
+
+   # Draw time/quarter or 'FINAL'
+   if game['over']:
+      # draw_sb.fontmode = "1"
+      draw_sb.text(xy=(24, 2), text='FINAL', font=small_font)
+   else:
+      draw_sb.text(xy=(20, 2), text=f"{game['time']} Q{game['quarter']}", font=small_font)
 
    return sb
 
 def font_path(filename: str):
 	return os.path.join(cwd.parent, "fonts", filename)
-
-# live_scores()
-# teams = nfldata.import_team_desc()
-# teams.to_csv("nfldata.csv")
-
-m = Matrix(brightness=70)
-live_scores(m)
 
 '''
 {'awayid': '6',
