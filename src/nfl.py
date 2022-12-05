@@ -49,9 +49,12 @@ def scoreboard(game):
    sb.paste(home_logo, box=(36,8))
 
    draw_sb = ImageDraw.Draw(sb, mode='RGB')
+   # score_font = ImageFont.load(font_path("9x18.pil"))
    # score_font = ImageFont.truetype(font_path("digitalix.ttf"), size=10)
    # score_font = ImageFont.truetype(font_path("UpheavalPro.ttf"), size=18)
-   score_font = ImageFont.truetype(font_path("square-pixel7.regular.ttf"), size=18)
+   score_font = ImageFont.truetype(font_path("square-pixel7.regular.ttf"), size=24)
+   # score_font = ImageFont.truetype(font_path("bm_receipt.ttf"), size=16)
+   # draw_sb.fontmode = "1"
    # Draw scores
    draw_sb.text(xy=(4,32), text=str(game['awayscore']), font=score_font)
    draw_sb.text(xy=(36,32), text=str(game['homescore']), font=score_font)
