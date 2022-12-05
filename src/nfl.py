@@ -3,16 +3,20 @@ from apis import nfl
 from pprint import PrettyPrinter
 pp = PrettyPrinter()
 
+import nfl_data_py as nfldata
+
+
 def live_scores():
 	while True:
 		games = nfl.get_all_games()
 		if games is None:
 			print("Could not get games")
 			continue
-		for game in games:
-			if is_team(game, "CLE"):
-				pp.pprint(game)
-			# print(game['name'])
+		pp.pprint(games)
+		# for game in games:
+		# 	if is_team(game, "CLE"):
+    	#     pp.pprint(game)
+		# 	# print(game['name'])
 
 		# time.sleep(60*3)
 		time.sleep(30)
@@ -20,10 +24,12 @@ def live_scores():
 def is_team(game, team_name: str):
 	return game['hometeam'] == team_name or game['awayteam'] == team_name
 
-def scoreboard(game):
+# def scoreboard(game):
 	
 
-live_scores()
+# live_scores()
+teams = nfldata.import_team_desc()
+teams.to_csv("nfldata.csv")
 
 '''
 {'awayid': '6',

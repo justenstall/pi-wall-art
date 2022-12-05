@@ -14,11 +14,12 @@ import multiprocessing as mp
 import pathlib
 import snow
 
-mode_switch_btn = Button(pin=8) # green wire
-mode_up_btn = Button(pin=11) # blue wire 1
+# Pins: 25, 10, 9, 11, 8
+mode_switch_btn = Button(pin=25) # green wire
+mode_up_btn = Button(pin=10) # blue wire 1
 mode_down_btn = Button(pin=9) # blue wire 2
-bright_up_btn = Button(pin=10) # yellow wire 1
-bright_down_btn = Button(pin=25) # yellow wire 2
+bright_up_btn = Button(pin=11) # yellow wire 1
+bright_down_btn = Button(pin=8) # yellow wire 2
 
 cwd = pathlib.Path(__file__).parent.resolve()
 
